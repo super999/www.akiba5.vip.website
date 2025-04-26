@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电影 - 影视资讯网</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 添加 jQuery CDN 引用 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        /* 电影页面特定样式 */
+        .movie-categories {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: #ff4081;
+            color: white;
+        }
+        
+        .movie-detail {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        .movie-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .movie-info-item {
+            background: #f9f9f9;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            width: 48%;
+        }
+        
+        .rating {
+            display: inline-block;
+            background: #ffeb3b;
+            color: #333;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .movie-info-item {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">影视资讯</div>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="movies.html">电影</a></li>
+                <li><a href="tv-shows.html">电视剧</a></li>
+                <li><a href="news.html">资讯</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>热门电影</h1>
+            <div class="movie-categories">
+                <button class="category-btn active">全部</button>
+                <button class="category-btn">科幻</button>
+                <button class="category-btn">动作</button>
+                <button class="category-btn">喜剧</button>
+                <button class="category-btn">剧情</button>
+            </div>
+        </section>
+
+        <section class="featured-movies">
+            <h2>推荐电影</h2>
+            <div class="movie-grid" id="featured-movies-grid">
+                <!-- 推荐电影将通过 JS 动态加载 -->
+            </div>
+        </section>
+
+        <section class="all-movies">
+            <h2>所有电影</h2>
+            <div class="movie-grid" id="all-movies-grid">
+                <!-- 所有电影将通过 JS 动态加载 -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 影视资讯网. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // 电影页面特定的 JavaScript
+        $(document).ready(function() {
+            // 加载所有电影
+            loadAllMovies();
+            
+            // 分类按钮点击事件
+            $('.category-btn').click(function() {
+                $('.category-btn').removeClass('active');
+                $(this).addClass('active');
+                // 这里可以添加过滤电影的逻辑
+            });
+            
+            // 电影卡片点击事件
+            $(document).on('click', '.card', function() {
+                const title = $(this).find('h3').text();
+                const rating = $(this).find('.rating').text().replace('评分：', '');
+                const image = $(this).find('img').attr('src');
+                
+                // 显示电影详情
+                showMovieDetail(title, rating, image);
+            });
+        });
+        
+        // 加载所有电影
+        function loadAllMovies() {
+            // 使用 popularMovies 数据加载推荐电影
+            $.each(popularMovies, function(index, movie) {
+                $('#featured-movies-grid').append(`
+                    <article class="card">
+                        <img src="${movie.image}" alt="${movie.title}">
+                        <div class="card-content">
+                            <h3>${movie.title}</h3>
+                            <div class="rating">评分：${movie.rating}</div>
+                        </div>
+                    </article>
+                `);
+            });
+            
+            // 创建更多电影数据用于展示
+            const moreMovies = [
+                { title: "星际穿越", rating: "9.3", image: "assets/movie1.jpg", category: "科幻" },
+                { title: "红海行动", rating: "8.5", image: "assets/movie2.jpg", category: "动作" },
+                { title: "你好，李焕英", rating: "8.1", image: "assets/movie3.jpg", category: "喜剧" },
+                { title: "我不是药神", rating: "9.0", image: "assets/movie4.jpg", category: "剧情" },
+                { title: "战狼2", rating: "8.7", image: "assets/movie5.jpg", category: "动作" },
+                { title: "哪吒之魔童降世", rating: "8.5", image: "assets/movie1.jpg", category: "动画" }
+            ];
+            
+            // 加载更多电影
+            $.each(moreMovies, function(index, movie) {
+                $('#all-movies-grid').append(`
+                    <article class="card" data-category="${movie.category}">
+                        <img src="${movie.image}" alt="${movie.title}">
+                        <div class="card-content">
+                            <h3>${movie.title}</h3>
+                            <div class="rating">评分：${movie.rating}</div>
+                        </div>
+                    </article>
+                `);
+            });
+        }
+        
+        // 显示电影详情
+        function showMovieDetail(title, rating, image) {
+            // 创建模拟的电影详情数据
+            const movieDetail = {
+                director: "知名导演",
+                actors: "主演1, 主演2, 主演3",
+                releaseDate: "2023-12-25",
+                duration: "120分钟",
+                description: "这是一部精彩的电影，剧情扣人心弦，演员表演出色..."
+            };
+            
+            // 创建详情弹窗
+            const detailHTML = `
+                <div class="movie-detail">
+                    <h2>${title}</h2>
+                    <img src="${image}" alt="${title}" style="max-width: 300px; margin: 1rem 0;">
+                    <div class="rating">评分：${rating}</div>
+                    <p>${movieDetail.description}</p>
+                    <div class="movie-info">
+                        <div class="movie-info-item">导演：${movieDetail.director}</div>
+                        <div class="movie-info-item">主演：${movieDetail.actors}</div>
+                        <div class="movie-info-item">上映日期：${movieDetail.releaseDate}</div>
+                        <div class="movie-info-item">片长：${movieDetail.duration}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 在这里可以实现弹窗或页内显示详情的逻辑
+            alert(`电影详情：${title}\n评分：${rating}\n导演：${movieDetail.director}\n主演：${movieDetail.actors}`);
+            // 实际项目中应该使用模态框或页面内容替换，而不是alert
+        }
+    </script>
+</body>
+</html>

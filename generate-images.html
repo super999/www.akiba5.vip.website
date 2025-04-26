@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成临时图片</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .image-item {
+            border: 1px solid #eee;
+            padding: 10px;
+            width: 220px;
+        }
+        .image-item img {
+            width: 100%;
+            height: auto;
+        }
+        button {
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>生成临时图片</h1>
+    <p>点击下方按钮生成 main.js 中引用的临时图片</p>
+    
+    <button id="generateBtn">生成所有图片</button>
+    
+    <div class="image-container" id="imageContainer"></div>
+    
+    <script>
+        // 从 main.js 中提取的图片路径
+        const imagePaths = [
+            "assets/movie1.jpg",  // 流浪地球3
+            "assets/tv1.jpg",     // 三体
+            "assets/movie2.jpg",  // 流浪地球2
+            "assets/movie3.jpg",  // 满江红
+            "assets/movie4.jpg",  // 独行月球
+            "assets/movie5.jpg"   // 长空之王
+        ];
+        
+        // 对应的电影/电视剧标题
+        const titles = [
+            "流浪地球3",
+            "三体",
+            "流浪地球2",
+            "满江红",
+            "独行月球",
+            "长空之王"
+        ];
+        
+        // 生成随机颜色
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        
+        // 生成图片并显示
+        function generateImage(path, title, index) {
+            // 创建 canvas 元素
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 300;
+            const ctx = canvas.getContext('2d');
+            
+            // 绘制背景
+            ctx.fillStyle = getRandomColor();
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制标题
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(title, canvas.width / 2, canvas.height / 2);
+            
+            // 绘制路径信息
+            ctx.font = '14px Arial';
+            ctx.fillText(path, canvas.width / 2, canvas.height / 2 + 30);
+            
+            // 将 canvas 转换为图片 URL
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            
+            // 创建图片元素并显示
+            const imageItem = $('<div class="image-item"></div>');
+            const img = $('<img>').attr('src', dataUrl).attr('alt', title);
+            const downloadLink = $('<a>').attr('href', dataUrl).attr('download', path.split('/').pop()).text('下载图片');
+            const pathText = $('<p>').text(path);
+            
+            imageItem.append(img, $('<h3>').text(title), pathText, downloadLink);
+            $('#imageContainer').append(imageItem);
+            
+            // 返回图片数据
+            return {
+                path: path,
+                dataUrl: dataUrl
+            };
+        }
+        
+        // 生成所有图片
+        $('#generateBtn').click(function() {
+            $('#imageContainer').empty();
+            
+            // 确保 assets 目录存在
+            const assetsDir = 'assets';
+            
+            // 生成并显示所有图片
+            imagePaths.forEach((path, index) => {
+                generateImage(path, titles[index], index);
+            });
+            
+            alert('图片已生成！请右键点击图片并选择"另存为"来保存到对应路径。');
+        });
+    </script>
+</body>
+</html>

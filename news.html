@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资讯 - 影视资讯网</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 添加 jQuery CDN 引用 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        /* 资讯页面特定样式 */
+        .news-categories {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: #ff4081;
+            color: white;
+        }
+        
+        .news-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1.5rem;
+        }
+        
+        .news-item:last-child {
+            border-bottom: none;
+        }
+        
+        .news-item h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .news-meta {
+            display: flex;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .news-meta span {
+            margin-right: 1rem;
+        }
+        
+        .news-content {
+            line-height: 1.6;
+        }
+        
+        .news-detail {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .news-detail img {
+            max-width: 100%;
+            height: auto;
+            margin: 1rem 0;
+        }
+        
+        .news-detail-meta {
+            color: #666;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .news-tags {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .news-tag {
+            background: #f0f0f0;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .read-more {
+            color: #ff4081;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+        
+        @media (max-width: 768px) {
+            .news-detail {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">影视资讯</div>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="movies.html">电影</a></li>
+                <li><a href="tv-shows.html">电视剧</a></li>
+                <li><a href="news.html">资讯</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>影视资讯中心</h1>
+            <div class="news-categories">
+                <button class="category-btn active">全部</button>
+                <button class="category-btn">电影资讯</button>
+                <button class="category-btn">电视剧资讯</button>
+                <button class="category-btn">明星动态</button>
+                <button class="category-btn">行业新闻</button>
+            </div>
+        </section>
+
+        <section class="featured-news">
+            <h2>热门资讯</h2>
+            <div class="news-grid" id="featured-news-grid">
+                <!-- 热门资讯将通过 JS 动态加载 -->
+            </div>
+        </section>
+
+        <section class="latest-news-list">
+            <h2>最新资讯</h2>
+            <div class="news-list" id="latest-news-list">
+                <!-- 最新资讯将通过 JS 动态加载 -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 影视资讯网. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // 资讯页面特定的 JavaScript
+        $(document).ready(function() {
+            // 加载所有资讯
+            loadAllNews();
+            
+            // 分类按钮点击事件
+            $('.category-btn').click(function() {
+                $('.category-btn').removeClass('active');
+                $(this).addClass('active');
+                const category = $(this).text();
+                
+                // 过滤资讯
+                if(category === '全部') {
+                    $('.news-item').show();
+                } else {
+                    $('.news-item').hide();
+                    $(`.news-item[data-category="${category}"]`).show();
+                }
+            });
+            
+            // 资讯点击事件
+            $(document).on('click', '.read-more', function(e) {
+                e.preventDefault();
+                const newsId = $(this).data('id');
+                
+                // 显示资讯详情
+                showNewsDetail(newsId);
+            });
+        });
+        
+        // 加载所有资讯
+        function loadAllNews() {
+            // 创建热门资讯数据
+            const featuredNews = [
+                { 
+                    id: 1,
+                    title: "《流浪地球3》确认开拍，吴京再次出演", 
+                    date: "2024-01-25",
+                    author: "影视编辑",
+                    category: "电影资讯",
+                    image: "assets/movie2.jpg",
+                    summary: "科幻电影《流浪地球》系列第三部正式宣布开拍，吴京将继续担任主演..."
+                },
+                { 
+                    id: 2,
+                    title: "《三体》电视剧全球热播，口碑爆棚", 
+                    date: "2024-01-22",
+                    author: "剧评人",
+                    category: "电视剧资讯",
+                    image: "assets/tv1.jpg",
+                    summary: "改编自刘慈欣同名小说的科幻剧《三体》正在全球范围内热播，获得了观众和评论家的一致好评..."
+                },
+                { 
+                    id: 3,
+                    title: "好莱坞著名导演将来华拍摄新片", 
+                    date: "2024-01-20",
+                    author: "国际记者",
+                    category: "行业新闻",
+                    image: "assets/movie3.jpg",
+                    summary: "据可靠消息，好莱坞著名导演计划来中国拍摄新电影，该片将融合东西方文化元素..."
+                },
+                { 
+                    id: 4,
+                    title: "知名演员获得国际电影节最佳演员奖", 
+                    date: "2024-01-18",
+                    author: "娱乐记者",
+                    category: "明星动态",
+                    image: "assets/movie4.jpg",
+                    summary: "在刚刚结束的国际电影节上，中国演员凭借出色的表演获得了最佳演员奖，这是中国电影人的又一重要突破..."
+                }
+            ];
+            
+            // 加载热门资讯
+            $.each(featuredNews, function(index, news) {
+                $('#featured-news-grid').append(`
+                    <article class="card">
+                        <img src="${news.image}" alt="${news.title}">
+                        <div class="card-content">
+                            <h3>${news.title}</h3>
+                            <div class="news-meta">
+                                <span>${news.date}</span>
+                                <span>${news.category}</span>
+                            </div>
+                            <p>${news.summary}</p>
+                            <a href="#" class="read-more" data-id="${news.id}">阅读更多</a>
+                        </div>
+                    </article>
+                `);
+            });
+            
+            // 创建更多资讯数据
+            const moreNews = [
+                { 
+                    id: 5,
+                    title: "2024年最值得期待的十部电影", 
+                    date: "2024-01-15",
+                    author: "影评人",
+                    category: "电影资讯",
+                    summary: "2024年电影市场将迎来众多大片，本文为您盘点最值得期待的十部电影..."
+                },
+                { 
+                    id: 6,
+                    title: "国产剧《狂飙》海外走红，获多国引进", 
+                    date: "2024-01-12",
+                    author: "海外记者",
+                    category: "电视剧资讯",
+                    summary: "近期热播的国产剧《狂飙》受到海外观众喜爱，已被多个国家和地区引进播出..."
+                },
+                { 
+                    id: 7,
+                    title: "知名演员宣布加盟新科幻大片", 
+                    date: "2024-01-10",
+                    author: "娱乐编辑",
+                    category: "明星动态",
+                    summary: "近日，知名演员通过社交媒体宣布将加盟一部投资巨大的科幻电影，该片预计明年上映..."
+                },
+                { 
+                    id: 8,
+                    title: "电影局发布新政策，支持科幻电影发展", 
+                    date: "2024-01-08",
+                    author: "政策分析师",
+                    category: "行业新闻",
+                    summary: "国家电影局近日发布新政策，将在资金和资源上大力支持科幻电影的发展，助力中国科幻电影产业腾飞..."
+                },
+                { 
+                    id: 9,
+                    title: "经典电影《阿凡达》系列将推出第四部", 
+                    date: "2024-01-05",
+                    author: "电影记者",
+                    category: "电影资讯",
+                    summary: "詹姆斯·卡梅隆导演确认《阿凡达》系列将继续拍摄第四部，预计2026年上映..."
+                },
+                { 
+                    id: 10,
+                    title: "流媒体平台订阅用户突破2亿，创历史新高", 
+                    date: "2024-01-02",
+                    author: "科技记者",
+                    category: "行业新闻",
+                    summary: "国内领先的流媒体平台宣布其订阅用户数量突破2亿，创下历史新高，显示出在线观影市场的巨大潜力..."
+                }
+            ];
+            
+            // 加载更多资讯
+            $.each(moreNews, function(index, news) {
+                $('#latest-news-list').append(`
+                    <article class="news-item" data-category="${news.category}">
+                        <h3>${news.title}</h3>
+                        <div class="news-meta">
+                            <span><i class="fa fa-calendar"></i> ${news.date}</span>
+                            <span><i class="fa fa-user"></i> ${news.author}</span>
+                            <span><i class="fa fa-tag"></i> ${news.category}</span>
+                        </div>
+                        <div class="news-content">
+                            <p>${news.summary}</p>
+                            <a href="#" class="read-more" data-id="${news.id}">阅读更多</a>
+                        </div>
+                    </article>
+                `);
+            });
+        }
+        
+        // 显示资讯详情
+        function showNewsDetail(newsId) {
+            // 模拟获取资讯详情数据
+            const newsDetail = {
+                title: "资讯详情标题",
+                date: "2024-01-15",
+                author: "资讯作者",
+                category: "资讯分类",
+                content: "这是一篇详细的资讯内容，包含了丰富的信息和精彩的描述...<br><br>段落1：更多详细内容...<br><br>段落2：更多详细内容...<br><br>段落3：更多详细内容...",
+                tags: ["电影", "好莱坞", "科幻", "奥斯卡"]
+            };
+            
+            // 根据ID获取实际资讯标题
+            const allNews = [...featuredNews, ...moreNews];
+            const news = allNews.find(n => n.id === newsId) || newsDetail;
+            
+            // 创建详情弹窗
+            const detailHTML = `
+                <div class="news-detail">
+                    <h2>${news.title || newsDetail.title}</h2>
+                    <div class="news-detail-meta">
+                        <span><i class="fa fa-calendar"></i> ${news.date || newsDetail.date}</span>
+                        <span><i class="fa fa-user"></i> ${news.author || newsDetail.author}</span>
+                        <span><i class="fa fa-tag"></i> ${news.category || newsDetail.category}</span>
+                    </div>
+                    <div class="news-detail-content">
+                        ${news.content || newsDetail.content}
+                    </div>
+                    <div class="news-tags">
+                        ${(news.tags || newsDetail.tags).map(tag => `<span class="news-tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // 在这里可以实现弹窗或页内显示详情的逻辑
+            alert(`资讯详情：${news.title || newsDetail.title}\n发布日期：${news.date || newsDetail.date}\n作者：${news.author || newsDetail.author}\n分类：${news.category || newsDetail.category}`);
+            // 实际项目中应该使用模态框或页面内容替换，而不是alert
+        }
+    </script>
+</body>
+</html>

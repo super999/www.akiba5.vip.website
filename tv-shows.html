@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电视剧 - 影视资讯网</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 添加 jQuery CDN 引用 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        /* 电视剧页面特定样式 */
+        .tv-categories {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: #ff4081;
+            color: white;
+        }
+        
+        .tv-detail {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        .tv-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .tv-info-item {
+            background: #f9f9f9;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            width: 48%;
+        }
+        
+        .rating {
+            display: inline-block;
+            background: #ffeb3b;
+            color: #333;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .tv-info-item {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">影视资讯</div>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="movies.html">电影</a></li>
+                <li><a href="tv-shows.html">电视剧</a></li>
+                <li><a href="news.html">资讯</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>热门电视剧</h1>
+            <div class="tv-categories">
+                <button class="category-btn active">全部</button>
+                <button class="category-btn">古装</button>
+                <button class="category-btn">都市</button>
+                <button class="category-btn">悬疑</button>
+                <button class="category-btn">科幻</button>
+            </div>
+        </section>
+
+        <section class="featured-tv-shows">
+            <h2>推荐电视剧</h2>
+            <div class="movie-grid" id="featured-tv-grid">
+                <!-- 推荐电视剧将通过 JS 动态加载 -->
+            </div>
+        </section>
+
+        <section class="all-tv-shows">
+            <h2>所有电视剧</h2>
+            <div class="movie-grid" id="all-tv-grid">
+                <!-- 所有电视剧将通过 JS 动态加载 -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 影视资讯网. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // 电视剧页面特定的 JavaScript
+        $(document).ready(function() {
+            // 加载所有电视剧
+            loadAllTVShows();
+            
+            // 分类按钮点击事件
+            $('.category-btn').click(function() {
+                $('.category-btn').removeClass('active');
+                $(this).addClass('active');
+                // 这里可以添加过滤电视剧的逻辑
+            });
+            
+            // 电视剧卡片点击事件
+            $(document).on('click', '.card', function() {
+                const title = $(this).find('h3').text();
+                const rating = $(this).find('.rating').text().replace('评分：', '');
+                const image = $(this).find('img').attr('src');
+                
+                // 显示电视剧详情
+                showTVDetail(title, rating, image);
+            });
+        });
+        
+        // 加载所有电视剧
+        function loadAllTVShows() {
+            // 创建推荐电视剧数据
+            const featuredTVShows = [
+                { title: "三体", rating: "9.1", image: "assets/tv1.jpg" },
+                { title: "狂飙", rating: "9.3", image: "assets/movie2.jpg" },
+                { title: "长安十二时辰", rating: "9.0", image: "assets/movie3.jpg" },
+                { title: "觉醒年代", rating: "9.4", image: "assets/movie4.jpg" }
+            ];
+            
+            // 加载推荐电视剧
+            $.each(featuredTVShows, function(index, tv) {
+                $('#featured-tv-grid').append(`
+                    <article class="card">
+                        <img src="${tv.image}" alt="${tv.title}">
+                        <div class="card-content">
+                            <h3>${tv.title}</h3>
+                            <div class="rating">评分：${tv.rating}</div>
+                        </div>
+                    </article>
+                `);
+            });
+            
+            // 创建更多电视剧数据用于展示
+            const moreTVShows = [
+                { title: "琅琊榜", rating: "9.5", image: "assets/movie1.jpg", category: "古装" },
+                { title: "都挺好", rating: "8.7", image: "assets/movie2.jpg", category: "都市" },
+                { title: "隐秘的角落", rating: "9.2", image: "assets/movie3.jpg", category: "悬疑" },
+                { title: "大明王朝1566", rating: "9.6", image: "assets/movie4.jpg", category: "古装" },
+                { title: "小欢喜", rating: "8.8", image: "assets/movie5.jpg", category: "都市" },
+                { title: "流浪地球", rating: "8.9", image: "assets/tv1.jpg", category: "科幻" }
+            ];
+            
+            // 加载更多电视剧
+            $.each(moreTVShows, function(index, tv) {
+                $('#all-tv-grid').append(`
+                    <article class="card" data-category="${tv.category}">
+                        <img src="${tv.image}" alt="${tv.title}">
+                        <div class="card-content">
+                            <h3>${tv.title}</h3>
+                            <div class="rating">评分：${tv.rating}</div>
+                        </div>
+                    </article>
+                `);
+            });
+        }
+        
+        // 显示电视剧详情
+        function showTVDetail(title, rating, image) {
+            // 创建模拟的电视剧详情数据
+            const tvDetail = {
+                director: "知名导演",
+                actors: "主演1, 主演2, 主演3",
+                releaseDate: "2023-10-15",
+                episodes: "40集",
+                description: "这是一部精彩的电视剧，剧情扣人心弦，演员表演出色..."
+            };
+            
+            // 创建详情弹窗
+            const detailHTML = `
+                <div class="tv-detail">
+                    <h2>${title}</h2>
+                    <img src="${image}" alt="${title}" style="max-width: 300px; margin: 1rem 0;">
+                    <div class="rating">评分：${rating}</div>
+                    <p>${tvDetail.description}</p>
+                    <div class="tv-info">
+                        <div class="tv-info-item">导演：${tvDetail.director}</div>
+                        <div class="tv-info-item">主演：${tvDetail.actors}</div>
+                        <div class="tv-info-item">首播日期：${tvDetail.releaseDate}</div>
+                        <div class="tv-info-item">集数：${tvDetail.episodes}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 在这里可以实现弹窗或页内显示详情的逻辑
+            alert(`电视剧详情：${title}\n评分：${rating}\n导演：${tvDetail.director}\n主演：${tvDetail.actors}\n集数：${tvDetail.episodes}`);
+            // 实际项目中应该使用模态框或页面内容替换，而不是alert
+        }
+    </script>
+</body>
+</html>

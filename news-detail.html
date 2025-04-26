@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资讯详情 - 影视资讯网</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 添加 jQuery CDN 引用 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        /* 资讯详情页面特定样式 */
+        .news-detail-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-detail-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .news-detail-header h1 {
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .news-detail-meta {
+            color: #666;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .news-detail-meta span {
+            margin-right: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .news-detail-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .news-detail-content {
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .news-detail-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .news-tags {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .news-tag {
+            background: #f0f0f0;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .related-news {
+            margin-top: 3rem;
+        }
+
+        .related-news h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .related-news-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .related-news-item {
+            background: #f9f9f9;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .related-news-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .related-news-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .related-news-item-content {
+            padding: 1rem;
+        }
+
+        .related-news-item h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .back-to-news {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #ff4081;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .news-detail-container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+
+            .news-detail-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .related-news-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">影视资讯</div>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="movies.html">电影</a></li>
+                <li><a href="tv-shows.html">电视剧</a></li>
+                <li><a href="news.html">资讯</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="news-detail-container" id="news-detail-container">
+            <!-- 资讯详情内容将通过 JS 动态加载 -->
+        </div>
+
+        <div class="related-news">
+            <div class="container">
+                <h3>相关资讯</h3>
+                <div class="related-news-list" id="related-news-list">
+                    <!-- 相关资讯将通过 JS 动态加载 -->
+                </div>
+                <a href="news.html" class="back-to-news">返回资讯列表</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 影视资讯网. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        $(document).ready(function () {
+            // 获取URL参数中的资讯ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const newsId = parseInt(urlParams.get('id'));
+
+            if (newsId) {
+                // 加载资讯详情
+                loadNewsDetail(newsId);
+                // 加载相关资讯
+                loadRelatedNews(newsId);
+            } else {
+                // 如果没有ID参数，显示错误信息
+                $('#news-detail-container').html('<h2>未找到资讯</h2><p>抱歉，未能找到您请求的资讯。</p><a href="news.html" class="back-to-news">返回资讯列表</a>');
+            }
+        });
+
+        // 加载资讯详情
+        function loadNewsDetail(newsId) {
+            // 创建热门资讯数据 (与news.html保持一致)
+            const featuredNews = [
+                {
+                    id: 1,
+                    title: "《流浪地球3》确认开拍，吴京再次出演",
+                    date: "2024-01-25",
+                    author: "影视编辑",
+                    category: "电影资讯",
+                    image: "assets/movie2.jpg",
+                    summary: "科幻电影《流浪地球》系列第三部正式宣布开拍，吴京将继续担任主演...",
+                    content: "<p>近日，中国科幻电影《流浪地球》系列的第三部作品正式宣布开机，这一消息迅速引发了影迷的热烈讨论。作为中国科幻电影的里程碑之作，《流浪地球》系列不仅在国内取得了巨大的票房成功，也让世界看到了中国科幻电影的实力。</p><p>据悉，《流浪地球3》将继续由郭帆导演执导，吴京将再次出演刘培强一角。影片预计将于2026年春节档上映，制作团队表示，第三部将在前两部的基础上进一步提升视觉效果和故事深度，为观众带来更加震撼的科幻体验。</p><p>《流浪地球》系列改编自刘慈欣的同名小说，讲述了太阳即将毁灭，人类为了生存，推动地球离开太阳系，寻找新家园的故事。该系列的成功不仅带动了中国科幻电影的发展，也培养了大量观众对科幻题材的兴趣。</p><p>吴京在接受采访时表示：\"能够继续参与这个系列的创作，我感到非常荣幸。《流浪地球》系列不仅是一部电影，更是中国电影工业和科幻创作的一次重要尝试。我们将继续努力，为观众带来更好的作品。\"</p>",
+                    tags: ["科幻电影", "流浪地球", "吴京", "中国电影"]
+                },
+                {
+                    id: 2,
+                    title: "《三体》电视剧全球热播，口碑爆棚",
+                    date: "2024-01-22",
+                    author: "剧评人",
+                    category: "电视剧资讯",
+                    image: "assets/tv1.jpg",
+                    summary: "改编自刘慈欣同名小说的科幻剧《三体》正在全球范围内热播，获得了观众和评论家的一致好评...",
+                    content: "<p>改编自刘慈欣著名科幻小说的电视剧《三体》正在全球多个国家和地区热播，这部作品不仅在中国国内引发热议，也在国际上获得了广泛关注和好评。</p><p>《三体》讲述了地球文明与三体文明之间复杂的交互故事，涉及物理学、天文学、社会学等多个领域的深刻思考。该剧集由知名导演执导，聚集了一批实力派演员，在视觉效果和叙事手法上都达到了很高的水准。</p><p>国际媒体普遍给予了该剧极高的评价，认为它成功地将小说中复杂的科学概念和哲学思考转化为了引人入胜的视觉叙事。美国某知名影评网站给出了9.2分的高分，称其为\"近年来最具野心和成就的科幻剧集之\"。</p><p>该剧的成功也被视为中国科幻作品走向世界的重要一步。随着《流浪地球》电影系列和《三体》电视剧的国际影响力不断扩大，中国科幻正逐渐在全球文化舞台上占据一席之地。</p>",
+                    tags: ["科幻剧", "三体", "刘慈欣", "全球热播"]
+                },
+                {
+                    id: 3,
+                    title: "好莱坞著名导演将来华拍摄新片",
+                    date: "2024-01-20",
+                    author: "国际记者",
+                    category: "行业新闻",
+                    image: "assets/movie3.jpg",
+                    summary: "据可靠消息，好莱坞著名导演计划来中国拍摄新电影，该片将融合东西方文化元素...",
+                    content: "<p>据可靠消息，好莱坞著名导演克里斯托弗·诺兰计划于今年下半年来中国拍摄他的新电影。这部尚未公布片名的作品将是一部融合东西方文化元素的史诗级作品，预计将在中国多个城市取景。</p><p>知情人士透露，诺兰对中国的历史和文化有着浓厚的兴趣，这次的新片将探索东西方文明的碰撞与融合。影片计划在北京、西安、敦煌等地取景，以展现中国丰富的历史文化底蕴。</p><p>这部电影将由好莱坞和中国电影公司联合出品，预计投资超过2亿美元，将是近年来规模最大的中美合拍片之一。据悉，剧组正在考虑邀请中国一线演员参演，与好莱坞明星共同出镜。</p><p>中国电影局相关负责人表示，欢迎国际优秀电影人来华创作，这将促进中国电影产业的国际化发展，也有助于中国文化走向世界。该片预计将于2025年全球上映。</p>",
+                    tags: ["好莱坞", "中国电影", "国际合作", "文化交流"]
+                },
+                {
+                    id: 4,
+                    title: "知名演员获得国际电影节最佳演员奖",
+                    date: "2024-01-18",
+                    author: "娱乐记者",
+                    category: "明星动态",
+                    image: "assets/movie4.jpg",
+                    summary: "在刚刚结束的国际电影节上，中国演员凭借出色的表演获得了最佳演员奖，这是中国电影人的又一重要突破...",
+                    content: "<p>在刚刚落幕的第77届戛纳国际电影节上，中国演员周冬雨凭借在电影《春潮》中的出色表演，获得了最佳女演员奖，这是中国电影人在国际舞台上的又一重要突破。</p><p>《春潮》是一部探讨家庭关系和代际冲突的现实主义作品，由新锐导演执导。周冬雨在片中饰演一位在家庭与事业之间挣扎的年轻女性，她细腻而有力的表演获得了评委会的一致好评。</p><p>评委会主席在颁奖词中称赞道：\"她的表演深入人心，将角色的内心挣扎和成长展现得淋漓尽致，这是一次真正的艺术成就。\"</p><p>周冬雨在获奖感言中表示：\"感谢电影节给予的这份荣誉，这不仅是对我个人的肯定，也是对中国电影的认可。我会继续努力，创作更多优秀的作品。\"</p><p>这是继巩俐、章子怡之后，又一位在戛纳电影节获得最佳女演员奖的中国演员，标志着中国电影演员在国际舞台上的影响力不断提升。</p>",
+                    tags: ["国际电影节", "最佳演员", "中国电影", "演艺成就"]
+                }
+            ];
+
+            // 创建更多资讯数据 (与news.html保持一致)
+            const moreNews = [
+                {
+                    id: 5,
+                    title: "2024年最值得期待的十部电影",
+                    date: "2024-01-15",
+                    author: "影评人",
+                    category: "电影资讯",
+                    summary: "2024年电影市场将迎来众多大片，本文为您盘点最值得期待的十部电影...",
+                    content: "<p>2024年电影市场将迎来众多大片，从超级英雄电影到文艺佳作，从科幻巨制到动画精品，各类题材的作品都有重磅推出。本文为您盘点2024年最值得期待的十部电影。</p><p><strong>1. 《沙丘：第二部》</strong><br>导演丹尼斯·维伦纽瓦的科幻史诗续集，将继续改编弗兰克·赫伯特的经典小说，蒂莫西·查拉梅、赞达亚等主演回归。</p><p><strong>2. 《阿凡达3》</strong><br>詹姆斯·卡梅隆导演的《阿凡达》系列第三部，将继续探索潘多拉星球的奇妙世界。</p><p><strong>3. 《疯狂动物城2》</strong><br>迪士尼动画工作室推出的热门动画续集，将带观众重返充满拟人化动物的现代都市。</p><p><strong>4. 《流浪地球3》</strong><br>中国科幻电影的代表作，将继续讲述人类为拯救地球而奋斗的故事。</p><p><strong>5. 《碟中谍8》</strong><br>汤姆·克鲁斯回归出演特工伊森·亨特，带来更多惊险刺激的动作场面。</p><p><strong>6. 《奥本海默2》</strong><br>诺兰导演的传记片续集，将继续探索\"原子弹之父\"的复杂人生。</p><p><strong>7. 《黑客帝国：重启》</strong><br>经典科幻系列的全新作品，将带来革命性的视觉效果和深刻的哲学思考。</p><p><strong>8. 《星球大战：新共和国》</strong><br>星战系列的最新电影，将开启全新的银河故事。</p><p><strong>9. 《速度与激情11》</strong><br>长寿动作系列的最新作品，将带来更多飙车场面和家族情感。</p><p><strong>10. 《寂静之地：第三部》</strong><br>约翰·卡拉辛斯基执导的恐怖科幻系列最终章，将揭晓外星生物入侵的更多真相。</p>",
+                    tags: ["2024电影", "电影盘点", "期待榜单", "好莱坞", "中国电影"]
+                },
+                {
+                    id: 6,
+                    title: "国产剧《狂飙》海外走红，获多国引进",
+                    date: "2024-01-12",
+                    author: "海外记者",
+                    category: "电视剧资讯",
+                    summary: "近期热播的国产剧《狂飙》受到海外观众喜爱，已被多个国家和地区引进播出...",
+                    content: "<p>近期在国内热播的电视剧《狂飙》不仅在国内引发热议，也在海外市场取得了显著成功。据最新消息，该剧已被包括韩国、日本、泰国、新加坡等在内的多个亚洲国家和地区引进，并计划在北美和欧洲多个国家的流媒体平台上线。</p><p>《狂飙》是一部聚焦社会现实题材的作品，由张译、张颂文等实力派演员主演。该剧以其扎实的剧本、精湛的演技和现实主义的表达方式，赢得了海外观众和评论家的一致好评。</p><p>在韩国，该剧上线首周便登上了当地流媒体平台的热播榜首位。韩国媒体评价道：\"这部中国剧集展现了令人印象深刻的叙事能力和社会洞察力，打破了我们对中国电视剧的固有印象。\"</p><p>在日本，多家电视台争相购买了该剧的播出权。一位日本电视制作人表示：\"《狂飙》的成功证明了优质内容的普遍吸引力，我们希望通过引进这样的作品，促进中日文化交流。\"</p><p>业内专家认为，《狂飙》的海外成功标志着中国电视剧\"走出去\"的新阶段，中国优质内容正在获得更广泛的国际认可。</p>",
+                    tags: ["国产剧", "海外市场", "文化输出", "狂飙"]
+                },
+                {
+                    id: 7,
+                    title: "知名演员宣布加盟新科幻大片",
+                    date: "2024-01-10",
+                    author: "娱乐编辑",
+                    category: "明星动态",
+                    summary: "近日，知名演员通过社交媒体宣布将加盟一部投资巨大的科幻电影，该片预计明年上映...",
+                    content: "<p>近日，国际知名演员汤姆·哈迪通过个人社交媒体宣布，他将加盟一部投资巨大的科幻电影《星际迷航：新纪元》，该片预计将于2025年上映。</p><p>据悉，《星际迷航：新纪元》是《星际迷航》系列的全新作品，将由好莱坞著名导演丹尼斯·维伦纽瓦执导。影片设定在一个全新的宇宙时空，讲述人类探索未知星域的冒险故事。</p><p>汤姆·哈迪在社交媒体上表示：\"非常兴奋能够加入这个传奇系列的新篇章。《星际迷航》一直是我最喜爱的科幻IP之一，能与维伦纽瓦导演合作是我的荣幸。\"</p><p>据片方透露，除汤姆·哈迪外，影片还将邀请多位国际一线明星加盟，包括几位亚洲面孔。该片预算高达2.5亿美元，将采用最先进的视觉特效技术，打造震撼的太空场景。</p><p>《星际迷航》系列自1966年首播以来，已成为全球最具影响力的科幻IP之一，拥有庞大的粉丝群体。业内专家预测，这部新作有望成为2025年全球票房最高的电影之一。</p>",
+                    tags: ["好莱坞", "科幻电影", "明星动态", "星际迷航"]
+                },
+                {
+                    id: 8,
+                    title: "电影局发布新政策，支持科幻电影发展",
+                    date: "2024-01-08",
+                    author: "政策分析师",
+                    category: "行业新闻",
+                    summary: "国家电影局近日发布新政策，将在资金和资源上大力支持科幻电影的发展，助力中国科幻电影产业腾飞...",
+                    content: "<p>国家电影局近日发布了《关于促进科幻电影发展的若干意见》，宣布将在资金、技术、人才培养等多方面大力支持中国科幻电影的发展，助力中国科幻电影产业腾飞。</p><p>根据这份新政策，国家将设立专项资金，每年投入10亿元人民币，用于支持科幻电影的创作和制作。同时，将建立科幻电影产业园区，引进国际先进的视觉特效技术和设备，为科幻电影制作提供硬件支持。</p><p>在人才培养方面，政策提出将与高校合作，设立科幻电影专业，培养专业的科幻电影创作、制作和特效人才。此外，还将鼓励科幻文学作家与电影人合作，推动优秀科幻文学作品的影视化改编。</p><p>电影局相关负责人表示：\"科幻电影是展现一个国家科技水平和文化创造力的重要窗口。近年来，《流浪地球》等作品的成功，证明了中国科幻电影的巨大潜力。我们希望通过这些政策措施，推动中国科幻电影实现质的飞跃，在国际舞台上占据一席之地。\"</p><p>业内专家认为，这一政策的出台将极大地促进中国科幻电影的发展，有望在未来5-10年内，使中国成为全球科幻电影的重要创作中心之一。</p>",
+                    tags: ["电影政策", "科幻电影", "产业支持", "中国电影"]
+                },
+                {
+                    id: 9,
+                    title: "经典电影《阿凡达》系列将推出第四部",
+                    date: "2024-01-05",
+                    author: "电影记者",
+                    category: "电影资讯",
+                    summary: "詹姆斯·卡梅隆导演确认《阿凡达》系列将继续拍摄第四部，预计2026年上映...",
+                    content: "<p>好莱坞传奇导演詹姆斯·卡梅隆近日在接受媒体采访时确认，《阿凡达》系列将继续拍摄第四部，预计于2026年上映。</p><p>卡梅隆表示：\"《阿凡达》的故事远未结束。我们已经完成了第三部的拍摄，正在进行后期制作，同时也在积极筹备第四部的拍摄工作。潘多拉星球还有很多秘密等待我们去探索。\"</p><p>据悉，《阿凡达4》将继续由原班人马打造，包括主演萨姆·沃辛顿和佐伊·索尔达娜。影片进一步探索纳人文明起源和潘多拉星球的更多奥秘，同时也会引入新的外星种族。</p><p>《阿凡达》系列自2009年首部上映以来，凭借革命性的3D技术和视觉效果，以及引人入胜的故事情节，成为全球最成功的电影系列之一。首部《阿凡达》至今仍保持着全球票房冠军的位置，而2022年上映的《阿凡达：水之道》也取得了超过22万美元的全球票房。</p><p>迪士尼影业的发言人表示：\"《阿凡达》系列是我们最重要的电影IP之一，我们对卡梅隆导演的创造力和远见充满信心，相信这个系列将继续为全球观众带来震撼的视觉体验和深刻的情感共鸣。\"</p>",
+                    tags: ["阿凡达", "詹姆斯·卡梅隆", "科幻电影", "好莱坞"]
+                },
+                {
+                    id: 10,
+                    title: "流媒体平台订阅用户突破2亿，创历史新高",
+                    date: "2024-01-02",
+                    author: "科技记者",
+                    category: "行业新闻",
+                    summary: "国内领先的流媒体平台宣布其订阅用户数量突破2亿，创造了历史新高，显示出在线观影市场的"
+
+                }
+            ];
+
+            // 获取资讯数据
+            $.getJSON('data/news-data.json', function (allNews) {
+                const newsItem = allNews.find(item => item.id === newsId);
+
+                if (newsItem) {
+                    const detailHTML = `
+                    <div class="news-detail-header">
+                        <h1>${newsItem.title}</h1>
+                        <div class="news-detail-meta">
+                            <span>发布日期：${newsItem.date}</span>
+                            <span>作者：${newsItem.author}</span>
+                            <span>分类：${newsItem.category}</span>
+                        </div>
+                        <img src="${newsItem.image}" class="news-detail-image" alt="${newsItem.title}">
+                    </div>
+                    <div class="news-detail-content">
+                        ${newsItem.content}
+                    </div>
+                    <div class="news-tags">
+                        ${newsItem.tags.map(tag => `<span class="news-tag">${tag}</span>`).join('')}
+                    </div>
+                `;
+                    $('#news-detail-container').html(detailHTML);
+                } else {
+                    $('#news-detail-container').html('<h2>未找到资讯</h2><p>抱歉，未能找到您请求的资讯。</p><a href="news.html" class="back-to-news">返回资讯列表</a>');
+                }
+            }).fail(function () {
+                console.error('Failed to load news data');
+            });
+        }
+        // 初始化页面
+</script>
+</body>
+</html>
+    
